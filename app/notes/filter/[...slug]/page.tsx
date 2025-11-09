@@ -4,12 +4,12 @@ import { fetchNotes } from "@/lib/api";
 import { NoteTag } from "@/types/note";
 
 type Props = {
-  params: Promise<{ slug: string[] }>;
+  params: { slug: string[] };
 };
 
 export default async function NotesPage({ params }: Props) {
   const queryClient = new QueryClient();
-  const { slug } = await params;
+  const { slug } = params;
   const tag = slug?.[0] === 'All' ? undefined : (slug?.[0] as NoteTag) || "";
 
   await queryClient.prefetchQuery({
