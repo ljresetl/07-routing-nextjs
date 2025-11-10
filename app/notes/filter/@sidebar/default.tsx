@@ -1,7 +1,7 @@
 import css from './SidebarNotes.module.css';
 import Link from 'next/link';
 
-const TAGS=['All', 'Todo', 'Work', 'Personal', 'Meeting', 'Shopping'];
+const TAGS=['all', 'Todo', 'Work', 'Personal', 'Meeting', 'Shopping'];
 
 export default function SidebarNotes() {
   return (
@@ -13,7 +13,7 @@ export default function SidebarNotes() {
               href={`/notes/filter/${tag}`}
               className={css.menuLink}
             >
-              {tag === 'All' ? 'All Notes' : tag}
+              {tag === 'all' ? 'All Notes' : tag}
             </Link>
           </li>
         ))}

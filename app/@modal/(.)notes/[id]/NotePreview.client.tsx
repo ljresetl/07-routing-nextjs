@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { fetchNoteById } from '@/lib/api';
+import Modal from '../../../../components/Modal/Modal'; // якщо є
 import css from './NotePreview.module.css';
 
 type Props = {
@@ -20,17 +21,21 @@ export default function NotePreview({ id }: Props) {
 
   const handleClose = () => router.back();
 
-  if (isLoading) return null;
-  if (error || !note) return null;
+  if (isLoading) {
+    return <div className={css.loading}>Завантаження...</div>;
+  }
+
+  if (error || !note) {
+    return <div className={css.error}>Не вдалося завантажити нотатку.</div>;
+  }
 
   return (
-    <div className={css.modalOverlay} onClick={handleClose}>
-      <div className={css.modalContent} onClick={e => e.stopPropagation()}>
-        <h2>{note.title}</h2>
-        <p>{note.content}</p>
-        <p><strong>Tag:</strong> {note.tag}</p>
-        <button onClick={handleClose}>Закрити</button>
-      </div>
-    </div>
+    <Modal onClose={handleClose}>
+      <h2>{note.title}</h2>
+      <p>{note.content}</p>
+      <p><strong>Tag:</strong> {note.tag}</p>
+      <p><strong>Created:</strong> {new Date(note.createdAt).toLocaleString()}</p>
+      <button onClick={handleClose}>Закрити</button>
+    </Modal>
   );
 }

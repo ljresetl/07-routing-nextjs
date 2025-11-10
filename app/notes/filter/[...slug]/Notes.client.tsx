@@ -2,7 +2,7 @@
 
 import css from './Notes.module.css';
 import { useState } from 'react';
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useDebouncedCallback } from 'use-debounce';
 import { fetchNotes } from '@/lib/api';
 import SearchBox from '@/components/SearchBox/SearchBox';
@@ -18,14 +18,14 @@ interface Props {
 }
 
 export default function Notes({ tag }: Props) {
-  // State
-  const [searchInput, setSearchInput] = useState<string>('');
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [searchInput, setSearchInput] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [modalOpen, setModalOpen] = useState(false);
   const perPage = 12;
 
-  // Query
+  const queryClient = useQueryClient();
+
   const debouncedSearch = useDebouncedCallback((value: string) => {
     setSearchQuery(value);
     setCurrentPage(1);
@@ -37,11 +37,14 @@ export default function Notes({ tag }: Props) {
       fetchNotes({ search: searchQuery, page: currentPage, perPage, tag }),
     placeholderData: keepPreviousData,
   });
+
   const handleCreateNote = () => {
     setCurrentPage(1);
+    queryClient.invalidateQueries({
+      queryKey: ['notes'],
+    });
   };
 
- 
   return (
     <div className={css.app}>
       <div className={css.toolbar}>
@@ -67,6 +70,7 @@ export default function Notes({ tag }: Props) {
           Create note +
         </button>
       </div>
+      {isError && <div className={css.error}>Помилка при завантаженні нотаток</div>}
       {!isLoading && !isError && data?.notes.length === 0 && <NoResult />}
       {isSuccess && data?.notes?.length > 0 && <NoteList notes={data.notes} />}
       {modalOpen && (

@@ -3,12 +3,13 @@
 import css from './NoteDetails.module.css';
 import { useQuery } from '@tanstack/react-query';
 import { fetchNoteById } from '@/lib/api';
-import { useParams } from 'next/navigation';
 import Link from 'next/link';
 
+type Props = {
+  id: string;
+};
 
-export default function NoteDetails() {
-  const { id } = useParams<{ id: string }>();
+export default function NoteDetails({ id }: Props) {
   const { data: note, isLoading, error } = useQuery({
     queryKey: ['notes', id],
     queryFn: () => fetchNoteById(id),
@@ -28,7 +29,7 @@ export default function NoteDetails() {
           <h2>{note.title}</h2>
         </div>
         <p className={css.content}>{note.content}</p>
-        <p className={css.date}>{note.createdAt}</p>
+        <p className={css.date}>{new Date(note.createdAt).toLocaleString()}</p>
       </div>
     </div>
   );
